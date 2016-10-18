@@ -78,7 +78,16 @@ class RouteScanCommand extends Command
     public function fire()
     {
         // get classes
-        $classes = $this->finder->getClassesFromNamespace($this->config['routes_namespace']);
+        $classes = [];
+        if (isset($this->config['routes_classes']) and is_array($this->config['routes_classes'])) {
+            $classes = array_merge($classes, $this->config['routes_classes']);
+        }
+        if (!empty($this->config['routes_namespace'])) {
+            $classes = array_merge($classes, $this->finder->getClassesFromNamespace($this->config['routes_namespace']));
+        } elseif (empty($classes)) {
+            // If routes_namespace is not specified and no class as already been specified (by routes_classes), then load all the classes from \App namespace
+            $classes = array_merge($classes, $this->finder->getClassesFromNamespace(null));
+        }
 
         // build metadata
         $routes = $this->scanner->scan($classes);

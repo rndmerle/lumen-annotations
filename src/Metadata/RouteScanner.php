@@ -173,7 +173,7 @@ class RouteScanner
             'create' => 'GET',
             'store' => 'POST',
             'show' => 'GET',
-            'edit' => 'GET',
+            'edit' => 'PATCH',
             'update' => 'PUT',
             'destroy' => 'DELETE'
         ];
@@ -194,7 +194,7 @@ class RouteScanner
             'create' => 'create',
             'store' => '',
             'show' => '/{id}',
-            'edit' => '/{id}/edit',
+            'edit' => '/{id}',
             'update' => '/{id}',
             'destroy' => '/{id}'
         ];

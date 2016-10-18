@@ -52,7 +52,17 @@ class AnnotationsServiceProvider extends ServiceProvider
         $app = $this->app;
 
         // get classes
-        $classes = $app['annotations.classfinder']->getClassesFromNamespace($app['config']['annotations.routes_namespace']);
+        // get classes
+        $classes = [];
+        if (isset($this->config['routes_classes']) and is_array($this->config['routes_classes'])) {
+            $classes = array_merge($classes, $this->config['routes_classes']);
+        }
+        if (!empty($this->config['routes_namespace'])) {
+            $classes = array_merge($classes, $app['annotations.classfinder']->getClassesFromNamespace($this->config['routes_namespace']));
+        } elseif (empty($classes)) {
+            // If routes_namespace is not specified and no class as already been specified (by routes_classes), then load all the classes from \App namespace
+            $classes = array_merge($classes, $app['annotations.classfinder']->getClassesFromNamespace(null));
+        }
 
         // build metadata
         $routes = $app['annotations.route.scanner']->scan($classes);
@@ -71,7 +81,16 @@ class AnnotationsServiceProvider extends ServiceProvider
         $app = $this->app;
 
         // get classes
-        $classes = $app['annotations.classfinder']->getClassesFromNamespace($app['config']['annotations.events_namespace']);
+        $classes = [];
+        if (isset($this->config['events_classes']) and is_array($this->config['events_classes'])) {
+            $classes = array_merge($classes, $this->config['events_classes']);
+        }
+        if (!empty($this->config['events_namespace'])) {
+            $classes = array_merge($classes, $app['annotations.classfinder']->getClassesFromNamespace($this->config['events_namespace']));
+        } elseif (empty($classes)) {
+            // If events_namespace is not specified and no class as already been specified (by events_classes), then load all the classes from \App namespace
+            $classes = array_merge($classes, $app['annotations.classfinder']->getClassesFromNamespace(null));
+        }
 
         // build metadata
         $events = $app['annotations.event.scanner']->scan($classes);

@@ -78,7 +78,16 @@ class EventScanCommand extends Command
     public function fire()
     {
         // get classes
-        $classes = $this->finder->getClassesFromNamespace($this->config['events_namespace']);
+        $classes = [];
+        if (isset($this->config['events_classes']) and is_array($this->config['events_classes'])) {
+            $classes = array_merge($classes, $this->config['events_classes']);
+        }
+        if (!empty($this->config['events_namespace'])) {
+            $classes = array_merge($classes, $this->finder->getClassesFromNamespace($this->config['events_namespace']));
+        } elseif (empty($classes)) {
+            // If events_namespace is not specified and no class as already been specified (by events_classes), then load all the classes from \App namespace
+            $classes = array_merge($classes, $this->finder->getClassesFromNamespace(null));
+        }
 
         // build metadata
         $events = $this->scanner->scan($classes);
